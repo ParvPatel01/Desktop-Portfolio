@@ -4,6 +4,7 @@ import Icons from "../components/Icons";
 import Window from "../components/Window";
 import ResumeWindowContent from "../components/ResumeWindowContent";
 import EmailWindowContent from "../components/EmailWindowContent";
+import ProjectsTerminal from "../components/ProjectsTerminal";
 
 const iconItems = [
     { icon: "code", label: "Resume.pdf", x: 10, y: 80, key: "resume" },
@@ -58,8 +59,8 @@ function HomeScreen() {
             )}
 
             {openWindows.includes("projects") && (
-                <Window title="Projects" onClose={() => closeWindow("projects")} navbarHeight={35}>
-                    <p>This is the projects content!</p>
+                <Window title="Projects" onClose={() => closeWindow("projects")} navbarHeight={35} width={800} height={500}>
+                    <ProjectsTerminal />
                 </Window>
             )}
         </div>

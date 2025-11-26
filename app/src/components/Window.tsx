@@ -89,7 +89,7 @@ const Window: React.FC<WindowProps> = ({
     boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
     color: "#1b1b1b",
     fontWeight: 600,
-    fontSize: "14px",
+    fontSize: "16px",
     userSelect: "none",
   };
 
