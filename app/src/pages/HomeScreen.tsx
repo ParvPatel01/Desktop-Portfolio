@@ -3,6 +3,7 @@ import NavBar from "../components/NavBar";
 import Icons from "../components/Icons";
 import Window from "../components/Window";
 import ResumeWindowContent from "../components/ResumeWindowContent";
+import EmailWindowContent from "../components/EmailWindowContent";
 
 const iconItems = [
     { icon: "code", label: "Resume.pdf", x: 10, y: 80, key: "resume" },
@@ -51,8 +52,8 @@ function HomeScreen() {
             )}
 
             {openWindows.includes("email") && (
-                <Window title="Email" onClose={() => closeWindow("email")} navbarHeight={35}>
-                    <p>This is the email content!</p>
+                <Window title="Email" onClose={() => closeWindow("email")} navbarHeight={35} width={700} height={600}>
+                    <EmailWindowContent onSend={() => {}} />
                 </Window>
             )}
 

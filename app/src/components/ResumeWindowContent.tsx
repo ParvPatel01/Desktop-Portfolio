@@ -25,7 +25,7 @@ const ResumeWindowContent: React.FC<ResumeWindowContentProps> = ({ file }) => {
           borderRadius: "4px",
           boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
         }}
-        title="About Me PDF"
+        title="Resume PDF"
       />
     </div>
   );

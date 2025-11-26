@@ -63,7 +63,7 @@ const Window: React.FC<WindowProps> = ({
     top: isFullscreen ? navbarHeight : position.y,
     width: isFullscreen ? "100vw" : width,
     height: isFullscreen ? `calc(100vh - ${navbarHeight}px)` : height,
-    backgroundColor: "#9b9b9bff",
+    backgroundColor: "#F5F5F7",
     boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
     borderRadius: "6px",
     overflow: "hidden",
