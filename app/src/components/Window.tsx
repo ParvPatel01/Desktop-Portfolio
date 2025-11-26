@@ -153,7 +153,7 @@ const Window: React.FC<WindowProps> = ({
       </div>
 
       {/* Window Content */}
-      <div style={{ flex: 1, padding: "1em", overflow: "auto" }}>{children}</div>
+      <div style={{ flex: 1,  overflow: "auto" }}>{children}</div>
     </div>
   );
 };
