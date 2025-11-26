@@ -1,0 +1,34 @@
+{
+  "projects": [
+    {
+      "name": "ChainStorm",
+      "description": "Blockchain prototype using Scala & Akka Actors with PoW mining, decentralized nodes, REST API & async messaging.",
+      "tech": "Scala, Akka, Akka HTTP, Blockchain",
+      "link": "https://github.com/ParvPatel01/ChainStorm"
+    },
+    {
+      "name": "3D-Bin-Packing",
+      "description": "3D bin packing algorithm with TypeScript + React visualizer using Three.js and skyline-based placement.",
+      "tech": "TypeScript, React, Three.js, Algorithms",
+      "link": "https://github.com/ParvPatel01/3D-Bin-Packing"
+    },
+    {
+      "name": "Spotlight 2",
+      "description": "Human rights violation reporting platform with profiles, issue reporting, categorization, and community engagement.",
+      "tech": "TypeScript, React, Node.js, Express, Redux",
+      "link": "https://github.com/ParvPatel01/Spotlight2"
+    },
+    {
+      "name": "Dante’s Inferno",
+      "description": "2D platformer adventure inspired by Dante Alighieri’s poem, featuring dark hell-themed environments, puzzles, and boss progression.",
+      "tech": "Unity, C#, 2D Game Design",
+      "link": "https://github.com/ParvPatel01/Dantes-Inferno-Game"
+    },
+    {
+      "name": "Wholesale Management Systems DB",
+      "description": "A full-scale wholesale business database featuring ERDs, triggers, views, stored procedures, and PowerBI dashboards for inventory and transaction insights.",
+      "tech": "SQL Server, ERD, DBMS, Python, PowerBI",
+      "link": "https://github.com/ParvPatel01/DMDD_GRP_19_WholesaleManagementSystem"
+    }
+  ]
+}

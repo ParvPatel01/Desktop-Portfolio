@@ -1,214 +1,258 @@
 import React, { useState, useRef, useEffect } from "react";
+import projectData from "../../public/projects.json";
 
-interface Command {
+interface CommandEntry {
   command: string;
   output: React.ReactNode;
 }
 
-const PROJECTS = [
-  {
-    name: "ChainStorm",
-    description: "Blockchain prototype using Scala & Akka Actors with PoW mining, decentralized nodes, REST API & async messaging.",
-    tech: "Scala, Akka, Akka HTTP, Blockchain",
-    link: "https://github.com/ParvPatel01/ChainStorm"
-  },
-  {
-    name: "3D-Bin-Packing",
-    description: "3D bin packing algorithm with TypeScript + React visualizer using Three.js and skyline-based placement.",
-    tech: "TypeScript, React, Three.js, Algorithms",
-    link: "https://github.com/ParvPatel01/3D-Bin-Packing"
-  },
-  {
-    name: "Spotlight 2",
-    description: "Human rights violation reporting platform with profiles, issue reporting, categorization, and community engagement.",
-    tech: "TypeScript, React, Node.js, Express, Redux",
-    link: "https://github.com/ParvPatel01/Spotlight2"
-  },
-  {
-    name: "Dante’s Inferno",
-    description: "2D platformer adventure inspired by Dante Alighieri’s poem, featuring dark hell-themed environments, puzzles, and boss progression.",
-    tech: "Unity, C#, 2D Game Design",
-    link: "https://github.com/ParvPatel01/Dantes-Inferno-Game"
-  },
-  {
-    name: "Wholesale Management Systems DB",
-    description: "A full-scale wholesale business database featuring ERDs, triggers, views, stored procedures, and PowerBI dashboards for inventory and transaction insights.",
-    tech: "SQL Server, ERD, DBMS, Python, PowerBI",
-    link: "https://github.com/ParvPatel01/DMDD_GRP_19_WholesaleManagementSystem"
-  }
-];
+const PROJECTS = projectData.projects;
 
+// Styles
+const styles = {
+  container: {
+    backgroundColor: "#1e1e1e",
+    color: "#e5e5e5",
+    height: "100%",
+    width: "100%",
+    padding: "10px",
+    overflowY: "auto",
+    fontSize: "18px",
+  } as React.CSSProperties,
+
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    marginTop: "6px",
+    fontSize: "18px",
+  } as React.CSSProperties,
+
+  tableHeader: {
+    borderBottom: "1px solid #555",
+  },
+
+  tableRow: {
+    borderBottom: "1px solid #333",
+    cursor: "pointer",
+  },
+
+  btn: {
+    padding: "4px 10px",
+    background: "#3c3c3c",
+    border: "1px solid #555",
+    color: "white",
+    cursor: "pointer",
+    borderRadius: "4px",
+  },
+};
+
+// Project Table Renderer
+const ProjectTable = ({
+  onOpen,
+  projects = PROJECTS,
+}: {
+  onOpen: (name: string) => void;
+  projects?: typeof PROJECTS;
+}) => (
+  <table style={styles.table}>
+    <thead>
+      <tr style={styles.tableHeader}>
+        <th style={{ textAlign: "left", padding: "4px 8px" }}>Project</th>
+        <th style={{ textAlign: "left", padding: "4px 8px" }}>Description</th>
+        <th style={{ padding: "4px 8px" }}>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {projects.map((p) => (
+        <tr
+          key={p.name}
+          style={styles.tableRow}
+          onClick={() => onOpen(p.name)}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#2a2a2a")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        >
+          <td style={{ padding: "6px 8px", color: "#4ec9b0" }}>{p.name}</td>
+          <td style={{ padding: "6px 8px", color: "#d4d4d4" }}>{p.description}</td>
+          <td style={{ padding: "6px 8px" }}>
+            <button
+              style={styles.btn}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen(p.name);
+              }}
+            >
+              Open
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+);
+
+// Terminal Component
 export default function ProjectsTerminal() {
   const [input, setInput] = useState("");
-  const [history, setHistory] = useState<Command[]>([]);
+  const [history, setHistory] = useState<CommandEntry[]>([]);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  // Initial startup banner
+  // On mount: show startup banner
   useEffect(() => {
-    setHistory([
-      {
-        command: "",
-        output: (
-          <>
-            <div>Copyright (C) QTerminal 8.0.2</div>
-            <div>~ Type 'help' for available commands</div>
-            <br />
-          </>
-        ),
-      },
-    ]);
+    setHistory([{ command: "", output: <StartupBanner /> }]);
   }, []);
 
-  const scrollToBottom = () => {
+  useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  useEffect(scrollToBottom, [history]);
+  }, [history]);
 
-  // Interactive project table
-  const renderProjectTable = () => (
-    <table
-      style={{
-        width: "100%",
-        borderCollapse: "collapse",
-        marginTop: "6px",
-        fontSize: "18px",
-      }}
-    >
-      <thead>
-        <tr style={{ borderBottom: "1px solid #555" }}>
-          <th style={{ textAlign: "left", padding: "4px 8px" }}>Project</th>
-          <th style={{ textAlign: "left", padding: "4px 8px" }}>Description</th>
-          <th style={{ padding: "4px 8px" }}>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {PROJECTS.map((p) => (
-          <tr key={p.name} style={{ borderBottom: "1px solid #333" }}>
-            <td style={{ padding: "6px 8px", color: "#4ec9b0" }}>{p.name}</td>
-            <td style={{ padding: "6px 8px", color: "#d4d4d4" }}>{p.description}</td>
-            <td style={{ padding: "6px 8px" }}>
-              <button
-                onClick={() => runCommand(`open ${p.name}`)}
-                style={{
-                  padding: "4px 10px",
-                  background: "#3c3c3c",
-                  border: "1px solid #555",
-                  color: "white",
-                  cursor: "pointer",
-                  borderRadius: "4px",
-                }}
-              >
-                Open
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+  // Banner
+  const StartupBanner = () => (
+    <>
+      <div>Copyright (C) Terminal 8.0.2</div>
+      <pre style={{ color: "#4ec9b0" }}>
+{String.raw`
+ ________  ________  ________  ___      ___ 
+|\   __  \|\   __  \|\   __  \|\  \    /  /|
+\ \  \|\  \ \  \|\  \ \  \|\  \ \  \  /  / /
+ \ \   ____\ \   __  \ \   _  _\ \  \/  / / 
+  \ \  \___|\ \  \ \  \ \  \\  \\ \    / /  
+   \ \__\    \ \__\ \__\ \__\\ _\\ \__/ /   
+    \|__|     \|__|\|__|\|__|\|__|\|__|/    
+                                            
+Portfolio Terminal v1.0
+`}
+      </pre>
+      <div>~ Type 'help' for available commands</div>
+      <br />
+    </>
   );
 
-  const runCommand = (cmd: string) => {
-    const trimmed = cmd.trim();
-    if (!trimmed) return;
+  // Command Implementations
+  const handleOpen = (name: string) => {
+    const project = PROJECTS.find(
+      (p) => p.name.toLowerCase() === name.toLowerCase()
+    );
 
-    let output: React.ReactNode = "";
+    if (!project) return <div>Project not found: {name}</div>;
 
-    switch (trimmed) {
-      case "help":
-        output = (
-          <>
-            <div>Available commands:</div>
-            <div>  help --- Show command list</div>
-            <div>  clear --- Clear terminal</div>
-            <div>  ls --- List all projects</div>
-            <div>  open &lt;project&gt; --- Open project details</div>
-          </>
-        );
-        break;
+    window.open(project.link, "_blank", "noopener,noreferrer");
 
-      case "clear":
-        setHistory([
-          {
-            command: "",
-            output: (
-              <>
-                <div>Copyright (C) QTerminal 8.0.2</div>
-                <div>~ Type 'help' for available commands</div>
-                <br />
-              </>
-            ),
-          },
-        ]);
-        return;
-
-      case "ls":
-        output = renderProjectTable();
-        break;
-
-      default:
-        if (trimmed.startsWith("open ")) {
-          const name = trimmed.replace("open ", "").trim();
-          const project = PROJECTS.find((p) => p.name === name);
-          project ? window.open(project.link, "_blank", "noopener,noreferrer") : null;
-          output = project ? (
-            <>
-              <div>Opening {project.name}...</div>
-              <br />
-              <div>{project.description}</div>
-              <br />
-              <a href={project.link} target="_blank" rel="noopener noreferrer">{project.link}</a>
-            </>
-          ) : (
-            <div>Project not found: {name}</div>
-          );
-        } else {
-          output = <div>Unknown command: {trimmed} (type "help")</div>;
-        }
-    }
-
-    setHistory((prev) => [...prev, { command: trimmed, output }]);
+    return (
+      <>
+        <div>Opening {project.name}...</div>
+        <br />
+        <div>{project.description}</div>
+        <br />
+        <a href={project.link} target="_blank" rel="noopener noreferrer">
+          {project.link}
+        </a>
+      </>
+    );
   };
 
+  const COMMANDS: Record<string, (...args: string[]) => React.ReactNode> = {
+    help: () => (
+      <>
+        <div>Available commands:</div>
+        <div>  help — Show command list</div>
+        <div>  clear — Clear terminal</div>
+        <div>  banner — Show ASCII art banner</div>
+        <div>  projects &lt;keyword&gt; — Search projects</div>
+        <div>  open &lt;project&gt; — Open a project</div>
+        <div>  time — Show current time</div>
+        <div>  about — Quick intro</div>
+        <div>  whoami — Who is Parv?</div>
+      </>
+    ),
+
+    banner: () => StartupBanner(),
+
+    time: () => <div>{new Date().toLocaleString()}</div>,
+
+    about: () => (
+      <>
+        <div>Hey, I'm Parv 👋</div>
+        <div>Full-stack & systems-focused developer.</div>
+      </>
+    ),
+
+    whoami: () => (
+      <div>
+        Parv Patel — Full-stack developer (Scala, TypeScript, React, distributed
+        systems, game dev)
+      </div>
+    ),
+
+    // Projects search command
+    projects: (keyword = "") => {
+      const search = keyword.toLowerCase();
+      const results = PROJECTS.filter(
+        (p) =>
+          p.name.toLowerCase().includes(search) ||
+          p.description.toLowerCase().includes(search) ||
+          p.tech.toLowerCase().includes(search)
+      );
+
+      if (!results.length) return <div>No projects found for "{keyword}"</div>;
+      return <ProjectTable onOpen={(name) => runCommand(`open ${name}`)} projects={results} />;
+    },
+  };
+
+  // Command Runner
+  const runCommand = (raw: string) => {
+    const cmdLine = raw.trim();
+    if (!cmdLine) return;
+
+    // Clear terminal
+    if (cmdLine === "clear") {
+      setHistory([{ command: "", output: StartupBanner() }]);
+      return;
+    }
+
+    const [cmd, ...args] = cmdLine.split(" ");
+    let output: React.ReactNode;
+
+    if (cmd === "open") {
+      const name = args.join(" ");
+      output = handleOpen(name);
+    } else if (COMMANDS[cmd]) {
+      output = COMMANDS[cmd](...args);
+    } else {
+      output = <div>Unknown command: {cmdLine} (type "help")</div>;
+    }
+
+    setHistory((prev) => [...prev, { command: cmdLine, output }]);
+  };
+
+  // Submit Handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     runCommand(input);
     setInput("");
   };
 
+  // Render
   return (
-    <div
-      style={{
-        backgroundColor: "#1e1e1e",
-        color: "#e5e5e5",
-        height: "100%",
-        width: "100%",
-        padding: "10px",
-        overflowY: "auto",
-        fontSize: "18px",
-      }}
-    >
-      {history.map((item, i) => (
-        <div key={i} >
-          {/* Terminal prompt */}
-          {item.command && (
+    <div style={styles.container}>
+      {history.map((entry, i) => (
+        <div key={i}>
+          {entry.command && (
             <div>
               <span style={{ color: "#4ec9b0" }}>visitor@parv-portfolio</span>
               <span style={{ color: "#9cdcfe" }}> $ </span>
-              {item.command}
+              {entry.command}
             </div>
           )}
-
-          {/* Output */}
-          <div>{item.output}</div>
+          <div>{entry.output}</div>
         </div>
       ))}
 
-      {/* Input */}
       <form onSubmit={handleSubmit} style={{ display: "flex" }}>
         <span style={{ color: "#4ec9b0", marginRight: 6 }}>
           visitor@parv-portfolio $
         </span>
         <input
+          autoFocus
           value={input}
           onChange={(e) => setInput(e.target.value)}
           style={{
@@ -217,10 +261,8 @@ export default function ProjectsTerminal() {
             border: "none",
             outline: "none",
             color: "white",
-            fontFamily: "inherit",
             fontSize: "18px",
           }}
-          autoFocus
         />
       </form>
 
