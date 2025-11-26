@@ -14,6 +14,8 @@ interface IconsProps {
     startY?: number;
 }
 
+const DRAG_THRESHOLD = 5; // <--- key addition
+
 const Icons: FunctionComponent<IconsProps> = ({
     icon,
     label,
@@ -26,21 +28,36 @@ const Icons: FunctionComponent<IconsProps> = ({
     const [position, setPosition] = useState({ x: startX, y: startY });
     const dragging = useRef(false);
     const offset = useRef({ x: 0, y: 0 });
+    const startPos = useRef({ x: 0, y: 0 });
+    const hasMoved = useRef(false);
 
     const ICON_WIDTH = 60;
     const ICON_HEIGHT = 80;
 
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
         dragging.current = true;
+        hasMoved.current = false;
+
+        startPos.current = { x: e.clientX, y: e.clientY };
+
         offset.current = {
             x: e.clientX - position.x,
             y: e.clientY - position.y,
         };
+
         e.currentTarget.setPointerCapture(e.pointerId);
     };
 
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!dragging.current) return;
+
+        const dx = e.clientX - startPos.current.x;
+        const dy = e.clientY - startPos.current.y;
+
+        // Detect drag vs click
+        if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+            hasMoved.current = true;
+        }
 
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
@@ -58,6 +75,11 @@ const Icons: FunctionComponent<IconsProps> = ({
     const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
         dragging.current = false;
         e.currentTarget.releasePointerCapture(e.pointerId);
+
+        // IF icon was dragged → do NOT trigger click
+        if (!hasMoved.current && onClick) {
+            onClick();
+        }
     };
 
     const renderCustomIcon = () => {
@@ -65,11 +87,6 @@ const Icons: FunctionComponent<IconsProps> = ({
         if (label === "Projects.md") return <TerminalIcon />;
         if (label === "Email") return <EmailIcon />;
         return <MaterialIcon icon={icon} size={size} />;
-    };
-
-    const handleOnClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        e.stopPropagation();
-        onClick && onClick();
     };
 
     return (
@@ -80,19 +97,17 @@ const Icons: FunctionComponent<IconsProps> = ({
                 top: position.y,
                 userSelect: "none",
                 touchAction: "none",
-                display: 'flex',
-                alignItems: 'center',
-                flexDirection: 'column',
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
             }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onClick={handleOnClick}
         >
-            {/* Icon Tile */}
             <div
                 style={{
-                    width: '3em',
+                    width: "3em",
                     borderRadius: "4px",
                     display: "flex",
                     alignItems: "center",
@@ -100,7 +115,6 @@ const Icons: FunctionComponent<IconsProps> = ({
                     marginBottom: "0.2em",
                     cursor: dragging.current ? "grabbing" : "grab",
                     transition: dragging.current ? "none" : "transform 0.2s ease",
-                    transformOrigin: "center bottom"
                 }}
                 onMouseEnter={(e) => {
                     if (!dragging.current) e.currentTarget.style.transform = "scale(1.05)";
@@ -108,12 +122,10 @@ const Icons: FunctionComponent<IconsProps> = ({
                 onMouseLeave={(e) => {
                     if (!dragging.current) e.currentTarget.style.transform = "scale(1)";
                 }}
-                onClick={onClick}
             >
                 {renderCustomIcon()}
             </div>
 
-            {/* Label */}
             {label && (
                 <p style={{ fontSize: "1em", margin: 0, color: "#333", textAlign: "center" }}>
                     {label}

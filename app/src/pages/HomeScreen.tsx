@@ -29,8 +29,12 @@ function HomeScreen() {
             style={{
                 height: "100vh",
                 width: "100vw",
-                backgroundColor: "#178485",
                 position: "relative",
+                overflow: "hidden",
+                backgroundColor: "#00878c",
+                backgroundImage: "url('https://www.transparenttextures.com/patterns/cartographer.png')",
+                backgroundRepeat: "repeat",
+                backgroundSize: "auto"
             }}
         >
             <NavBar />

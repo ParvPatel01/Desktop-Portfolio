@@ -1,14 +1,41 @@
 import React, { useState, useRef, useEffect } from "react";
 
 interface Command {
-  command: string; 
+  command: string;
   output: React.ReactNode;
 }
 
 const PROJECTS = [
-  { name: "portfolio-site", desc: "React + TS portfolio" },
-  { name: "game-dante", desc: "2D platformer in Unity" },
-  { name: "scala-webcrawler", desc: "Scala FP web crawler" },
+  {
+    name: "ChainStorm",
+    description: "Blockchain prototype using Scala & Akka Actors with PoW mining, decentralized nodes, REST API & async messaging.",
+    tech: "Scala, Akka, Akka HTTP, Blockchain",
+    link: "https://github.com/ParvPatel01/ChainStorm"
+  },
+  {
+    name: "3D-Bin-Packing",
+    description: "3D bin packing algorithm with TypeScript + React visualizer using Three.js and skyline-based placement.",
+    tech: "TypeScript, React, Three.js, Algorithms",
+    link: "https://github.com/ParvPatel01/3D-Bin-Packing"
+  },
+  {
+    name: "Spotlight 2",
+    description: "Human rights violation reporting platform with profiles, issue reporting, categorization, and community engagement.",
+    tech: "TypeScript, React, Node.js, Express, Redux",
+    link: "https://github.com/ParvPatel01/Spotlight2"
+  },
+  {
+    name: "Dante’s Inferno",
+    description: "2D platformer adventure inspired by Dante Alighieri’s poem, featuring dark hell-themed environments, puzzles, and boss progression.",
+    tech: "Unity, C#, 2D Game Design",
+    link: "https://github.com/ParvPatel01/Dantes-Inferno-Game"
+  },
+  {
+    name: "Wholesale Management Systems DB",
+    description: "A full-scale wholesale business database featuring ERDs, triggers, views, stored procedures, and PowerBI dashboards for inventory and transaction insights.",
+    tech: "SQL Server, ERD, DBMS, Python, PowerBI",
+    link: "https://github.com/ParvPatel01/DMDD_GRP_19_WholesaleManagementSystem"
+  }
 ];
 
 export default function ProjectsTerminal() {
@@ -58,7 +85,7 @@ export default function ProjectsTerminal() {
         {PROJECTS.map((p) => (
           <tr key={p.name} style={{ borderBottom: "1px solid #333" }}>
             <td style={{ padding: "6px 8px", color: "#4ec9b0" }}>{p.name}</td>
-            <td style={{ padding: "6px 8px", color: "#d4d4d4" }}>{p.desc}</td>
+            <td style={{ padding: "6px 8px", color: "#d4d4d4" }}>{p.description}</td>
             <td style={{ padding: "6px 8px" }}>
               <button
                 onClick={() => runCommand(`open ${p.name}`)}
@@ -122,14 +149,14 @@ export default function ProjectsTerminal() {
         if (trimmed.startsWith("open ")) {
           const name = trimmed.replace("open ", "").trim();
           const project = PROJECTS.find((p) => p.name === name);
-
+          project ? window.open(project.link, "_blank", "noopener,noreferrer") : null;
           output = project ? (
             <>
               <div>Opening {project.name}...</div>
               <br />
-              <div>{project.desc}</div>
+              <div>{project.description}</div>
               <br />
-              <div>(You can hook real navigation here)</div>
+              <a href={project.link} target="_blank" rel="noopener noreferrer">{project.link}</a>
             </>
           ) : (
             <div>Project not found: {name}</div>
