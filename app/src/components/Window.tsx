@@ -6,6 +6,7 @@ interface WindowProps {
   height?: number;
   navbarHeight?: number; // height of your top navbar
   onClose?: () => void;
+  onFocus?: () => void;
   children: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ const Window: React.FC<WindowProps> = ({
   height = 300,
   navbarHeight = 40,
   onClose,
+  onFocus,
   children,
 }) => {
   const [position, setPosition] = useState({ x: 100, y: 100 });
@@ -25,7 +27,10 @@ const Window: React.FC<WindowProps> = ({
   const offset = useRef({ x: 0, y: 0 });
 
   // Bring window to front
-  const bringToFront = () => setZIndex((prev) => prev + 1);
+  const bringToFront = () => {
+    setZIndex((prev) => prev + 1);
+    if (onFocus) onFocus();
+  };
 
   // Drag handlers
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -53,6 +58,12 @@ const Window: React.FC<WindowProps> = ({
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     dragging.current = false;
     e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  const handlePointerDownHeader = (e: React.PointerEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest(".material-symbols-outlined")) return;
+    handlePointerDown(e);
+    bringToFront(); // ensure focus is set when dragging starts
   };
 
   const toggleFullscreen = () => setIsFullscreen((prev) => !prev);
@@ -118,10 +129,7 @@ const Window: React.FC<WindowProps> = ({
       {/* Window Header */}
       <div
         style={windowHeaderStyle}
-        onPointerDown={(e) => {
-          if ((e.target as HTMLElement).closest(".material-symbols-outlined")) return;
-          handlePointerDown(e);
-        }}
+        onPointerDown={e => handlePointerDownHeader(e)}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
       >
@@ -153,7 +161,7 @@ const Window: React.FC<WindowProps> = ({
       </div>
 
       {/* Window Content */}
-      <div style={{ flex: 1,  overflow: "auto" }}>{children}</div>
+      <div style={{ flex: 1, overflow: "auto" }}>{children}</div>
     </div>
   );
 };

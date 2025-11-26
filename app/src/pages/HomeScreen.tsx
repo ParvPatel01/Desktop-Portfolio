@@ -8,20 +8,31 @@ import ProjectsTerminal from "../components/ProjectsTerminal";
 
 const iconItems = [
     { icon: "code", label: "Resume.pdf", x: 10, y: 80, key: "resume" },
-    { icon: "mail", label: "Email", x: 10, y: 180, key: "email" },
+    { icon: "mail", label: "Contact.app", x: 10, y: 180, key: "email" },
     { icon: "folder", label: "Projects.md", x: 10, y: 280, key: "projects" },
 ];
 
 function HomeScreen() {
     const [openWindows, setOpenWindows] = useState<string[]>([]);
-
+      const [activeWindow, setActiveWindow] = useState<string | null>(null);
     const openWindow = (key?: string) => {
         if (!key) return;
         setOpenWindows((prev) => (prev.includes(key) ? prev : [...prev, key]));
+        setActiveWindow(key);
     };
+
+     const focusWindow = (key: string) => setActiveWindow(key);
 
     const closeWindow = (key: string) => {
         setOpenWindows((prev) => prev.filter((k) => k !== key));
+        if (activeWindow === key) {
+            setActiveWindow(null);
+        }
+    };
+
+    const handleMenuClick = (menu: string) => {
+        console.log("Menu clicked:", menu, "on window:", activeWindow);
+
     };
 
     return (
@@ -37,7 +48,7 @@ function HomeScreen() {
                 backgroundSize: "auto"
             }}
         >
-            <NavBar />
+            <NavBar activeWindowKey={activeWindow} onMenuClick={handleMenuClick} />
 
             {iconItems.map((item) => (
                 <Icons
@@ -51,19 +62,19 @@ function HomeScreen() {
             ))}
 
             {openWindows.includes("resume") && (
-                <Window title="Resume.pdf" onClose={() => closeWindow("resume")} navbarHeight={40} width={800} height={750}>
+                <Window title="Resume.pdf" onClose={() => closeWindow("resume")} navbarHeight={40} width={800} height={750} onFocus={() => focusWindow("resume")}>
                     <ResumeWindowContent file="../../public/resume.pdf" />
                 </Window>
             )}
 
             {openWindows.includes("email") && (
-                <Window title="Email" onClose={() => closeWindow("email")} navbarHeight={35} width={700} height={600}>
-                    <EmailWindowContent onSend={() => {}} />
+                <Window title="Contact" onClose={() => closeWindow("email")} navbarHeight={35} width={700} height={600} onFocus={() => focusWindow("email")}>
+                    <EmailWindowContent onSend={() => { }} />
                 </Window>
             )}
 
             {openWindows.includes("projects") && (
-                <Window title="Projects" onClose={() => closeWindow("projects")} navbarHeight={35} width={800} height={500}>
+                <Window title="Projects" onClose={() => closeWindow("projects")} navbarHeight={35} width={800} height={500} onFocus={() => focusWindow("projects")}>
                     <ProjectsTerminal />
                 </Window>
             )}

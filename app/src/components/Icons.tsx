@@ -85,7 +85,7 @@ const Icons: FunctionComponent<IconsProps> = ({
     const renderCustomIcon = () => {
         if (label === "Resume.pdf") return <PdfIcon />;
         if (label === "Projects.md") return <TerminalIcon />;
-        if (label === "Email") return <EmailIcon />;
+        if (label === "Contact.app") return <EmailIcon />;
         return <MaterialIcon icon={icon} size={size} />;
     };
 
