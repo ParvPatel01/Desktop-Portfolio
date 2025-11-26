@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 
 interface EmailWindowContentProps {
-    onSend?: (to: string, subject: string, body: string) => void;
+    onSend?: (to: string, subject: string, body: string) => void | Promise<void>;
 }
 
 const EmailWindowContent: React.FC<EmailWindowContentProps> = ({ onSend }) => {
@@ -9,21 +10,38 @@ const EmailWindowContent: React.FC<EmailWindowContentProps> = ({ onSend }) => {
     const [subject, setSubject] = useState("");
     const [body, setBody] = useState("");
     const [status, setStatus] = useState<string | null>(null);
+    const [isSending, setIsSending] = useState(false);
+    const [errorDetails, setErrorDetails] = useState<string | null>(null);
+    const [showDetails, setShowDetails] = useState(false);
 
-    const handleSend = () => {
-        if (!from || !subject || !body) {
-            setStatus("Please fill in all fields.");
-            return;
+    const handleSend = async () => {
+        setIsSending(true);
+        setStatus(null);
+        setErrorDetails(null);
+
+        try {
+            const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+            const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+            const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+            
+            const templateParams = {
+                to_email: "parv.p90@gmail.com",
+                from_email: from,
+                subject: subject,
+                message: body,
+            };
+            
+            await emailjs.send(serviceId, templateId, templateParams, publicKey);
+            setStatus("Email sent successfully!");
+            if (onSend) {
+                await onSend(from, subject, body);
+            }
+        } catch (error) {
+            setStatus("Failed to send email.");
+            setErrorDetails(error instanceof Error ? error.message : String(error));
+        } finally {
+            setIsSending(false);
         }
-
-        if (onSend) {
-            onSend(from, subject, body);
-        }
-
-        setStatus("Email sent successfully!");
-        setFrom("");
-        setSubject("");
-        setBody("");
     };
 
     const labelDivStyle: React.CSSProperties = {
@@ -78,10 +96,33 @@ const EmailWindowContent: React.FC<EmailWindowContentProps> = ({ onSend }) => {
                 />
             </div>
 
-            {status && <div style={{ color: "green" }}>{status}</div>}
+            {status && (
+                <div style={{ color: status.toLowerCase().includes("failed") ? "crimson" : "green" }}>{status}</div>
+            )}
 
-            <button onClick={handleSend} style={buttonStyle}>
-                Send
+            {errorDetails && (
+                <div style={{ marginTop: "0.25em" }}>
+                    <button
+                        onClick={() => setShowDetails((s) => !s)}
+                        style={{
+                            padding: "0.25em 0.5em",
+                            marginBottom: "0.25em",
+                            borderRadius: 4,
+                            border: "1px solid #ccc",
+                            background: "#fff",
+                            cursor: "pointer",
+                        }}
+                    >
+                        {showDetails ? "Hide details" : "Show error details"}
+                    </button>
+                    {showDetails && (
+                        <pre style={{ whiteSpace: "pre-wrap", background: "#f6f6f6", padding: "0.5em", borderRadius: 4 }}>{errorDetails}</pre>
+                    )}
+                </div>
+            )}
+
+            <button onClick={handleSend} style={{ ...buttonStyle, opacity: isSending ? 0.6 : 1 }} disabled={isSending}>
+                {isSending ? "Sending..." : "Send"}
             </button>
         </div>
     );
