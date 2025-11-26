@@ -1,28 +1,67 @@
+import React, { useState } from "react";
 import NavBar from "../components/NavBar";
 import Icons from "../components/Icons";
+import Window from "../components/Window";
+
+const iconItems = [
+  { icon: "code", label: "About_Me.pdf", x: 10, y: 80, key: "resume" },
+  { icon: "mail", label: "Email", x: 10, y: 180, key: "email" },
+  { icon: "folder", label: "Projects.md", x: 10, y: 280, key: "projects" },
+];
 
 function HomeScreen() {
-    return (
-        <div style={{
-            height: '100vh',
-            width: '100vw',
-            backgroundColor: '#178485',
-        }}>
-            <NavBar />
-            <Icons icon="code" label="About Me" startX={10} startY={80} />
-            <Icons icon="mail" label="Email" startX={10} startY={180} />
-            <Icons icon="folder" label="Projects" startX={10} startY={280} />
+  const [openWindows, setOpenWindows] = useState<string[]>([]);
 
-            <Icons
-                icon="description"
-                label="Resume"
-                onClick={() => window.open("/resume.pdf")}
-                startX={10} startY={380}
-            />
-            <Icons icon="settings" label="Settings" size={32} startX={10} startY={480} />
+  const openWindow = (key?: string) => {
+    if (!key) return;
+    setOpenWindows((prev) => (prev.includes(key) ? prev : [...prev, key]));
+  };
 
-        </div>
-    );
+  const closeWindow = (key: string) => {
+    setOpenWindows((prev) => prev.filter((k) => k !== key));
+  };
+
+  return (
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        backgroundColor: "#178485",
+        position: "relative",
+      }}
+    >
+      <NavBar />
+
+      {iconItems.map((item) => (
+        <Icons
+          key={item.key}
+          icon={item.icon}
+          label={item.label}
+          startX={item.x}
+          startY={item.y}
+          onClick={() => openWindow(item.key)}
+        />
+      ))}
+
+      {openWindows.includes("resume") && (
+        <Window title="About Me.pdf" onClose={() => closeWindow("resume")} navbarHeight={35}>
+          <p>This is the about me content!</p>
+        </Window>
+      )}
+
+      {openWindows.includes("email") && (
+        <Window title="Email" onClose={() => closeWindow("email")} navbarHeight={35}>
+          <p>This is the email content!</p>
+        </Window>
+      )}
+
+      {openWindows.includes("projects") && (
+        <Window title="Projects" onClose={() => closeWindow("projects")} navbarHeight={35}>
+          <p>This is the projects content!</p>
+        </Window>
+      )}
+    </div>
+  );
 }
 
 export default HomeScreen;
